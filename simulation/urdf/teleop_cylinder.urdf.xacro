@@ -1,0 +1,43 @@
+<robot name="mobile_cylinder" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="model_name" default="teleop_obst" />
+  <link name="$(arg model_name)">
+    <kinematic>true</kinematic>
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="70.0" />
+      <inertia  ixx="18.43" ixy="0.0"  ixz="0.0"  iyy="18.43"  iyz="0.0"  izz="3.15" />
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder length="1.7" radius="0.4"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="1.7" radius="0.4"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+  <gazebo reference="$(arg model_name)">
+    <material>Gazebo/Red</material>
+    <mu>0.0</mu>
+    <mu2>0.0</mu2>
+  </gazebo>
+  <gazebo>
+    <plugin name="$(arg model_name)_controller_plugin" filename="libgazebo_ros_planar_move.so">
+      <commandTopic>$(arg model_name)_cmd_vel</commandTopic>
+      <odometryTopic>$(arg model_name)_odom</odometryTopic>
+      <odometryFrame>$(arg model_name)_odom</odometryFrame>
+      <odometryRate>20.0</odometryRate>
+      <robotBaseFrame>$(arg model_name)</robotBaseFrame>
+    </plugin>
+  </gazebo>
+</robot>

@@ -1,0 +1,47 @@
+<launch>
+
+  <arg name="record_rosbag"   default="false"/>
+
+  <arg name="use_scan"        default="false"/>
+
+  <!-- Launch the rover -->
+    <include file="$(find launchers)/launch/online_rover.launch">
+      <arg name="record_rosbag"   value="$(arg record_rosbag)"/>
+    </include>
+
+
+
+  <!-- If use scan is true, launch the appropriate -->
+  <!-- pointcloud converter and the pseudo scan node -->
+    <!-- Pointcloud converter -->
+    <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen" if="$(arg use_scan)"/>
+    <node pkg="nodelet" type="nodelet" name="reasense_depth2pointcloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen">
+      <remap from="depth_registered/image_rect" to="/camera/aligned_depth_to_color/image_raw"/>
+      <remap from="rgb/image_rect_color"        to="/camera/color/image_raw"/>
+      <remap from="rgb/camera_info"             to="/camera/aligned_depth_to_color/camera_info" />
+      <remap from="depth_registered/points"     to="/new_pointcloud"/>
+    </node>
+    <!-- Pseudolidar -->
+    <node pkg="sensors" name="min_scan" type="min_2Dscan" if="$(arg use_scan)"/>
+
+
+
+
+  <!-- Launch mapping -->
+    <include file="$(find rtabmap_ros)/launch/rgbd_mapping.launch" >
+      <arg name="rgb_topic"              value="/camera/color/image_raw" />
+      <arg name="camera_info_topic"      value="/camera/aligned_depth_to_color/camera_info" />
+      <arg name="depth_registered_topic" value="/camera/aligned_depth_to_color/image_raw" />
+      <arg name="visual_odometry"        value="true"/>
+      <arg name="frame_id"               value="camera"/>
+      <arg name="odom_topic"             value="/odometry/filtered"/>
+      <arg name="odom_frame_id"          value=""/>
+      <arg name="wait_for_transform"     value="1.0"/>
+      <arg name="rtabmap_args"           value="--delete_db_on_start"/>
+      <arg name="subscribe_scan"         value="$(arg use_scan)"/>
+      <arg name="scan_topic"             value="/min_scan/scan"/>
+    </include>
+
+
+
+</launch>

@@ -1,0 +1,58 @@
+frequency: 50
+silent_tf_failure: false
+sensor_timeout: 0.1
+two_d_mode: true
+transform_time_offset: 0.0
+transform_timeout: 0.0
+print_diagnostics: true
+debug: false
+publish_tf: true
+publish_acceleration: false
+permit_corrected_publication: false
+
+map_frame: map # Defaults to "map" if unspecified
+odom_frame: odom # Defaults to "odom" if unspecified
+base_link_frame: base_footprint # Defaults to "base_link" if unspecified
+world_frame: odom # Defaults to the value of odom_frame if unspecified
+
+odom0: /odom # Wheel odometry
+odom0_config: [false,  false,  false, # x, y, z
+               false, false, false, # roll, pitch, yaw
+               true, false, false, # vx, vy, vz
+               false, false, false, # vroll, vpitch, vyaw
+               false, false, false] # ax, ay, az
+odom0_queue_size: 2
+odom0_nodelay: false
+odom0_differential: false
+odom0_relative: false
+odom0_pose_rejection_threshold: 5
+odom0_twist_rejection_threshold: 1
+
+odom1: /odom_visual # RTABMAP odometry
+odom1_config: [true,  true,  false, # x, y, z
+               false, false, true, # roll, pitch, yaw
+               true, true, false, # vx, vy, vz
+               false, false, true, # vroll, vpitch, vyaw
+               false, false, false] # ax, ay, az
+odom1_queue_size: 2
+odom1_nodelay: false
+odom1_differential: false
+odom1_relative: false
+odom1_pose_rejection_threshold: 5
+odom1_twist_rejection_threshold: 1
+
+initial_estimate_covariance: [0.1, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0.1, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    1e-9, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    1e-9, 0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    1e-9, 0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0.3, 0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0.3, 0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0.3, 0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    1e-9, 0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    1e-9,  0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     1e-9,  0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0.3,  0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     1e-9, 0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    1e-9, 0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]

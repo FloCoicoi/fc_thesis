@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="world_name" default="large_room"/>
+  <param name="use_sim_time" value="true"/>
+  <arg name="publish_odom" default="true"/>
+
+  <!-- Launch the simulation -->
+  <include file="$(find roverrobotics_simulation)/launch/gazebo/4wd_rover_gazebo.launch">
+    <arg name="world_name" value="$(arg world_name).world" />
+  </include>
+
+  <!-- Launch basic controller -->
+  <!-- It is more convenient to keep that here even though it would be cleaner in the robot_nav.launch -->
+  <node pkg="rover_controller" type="basic_controller" name="basic_controller" output="screen"/>
+
+  <!-- Launch tf broadcaster -->
+  <node pkg="rover_tf_publisher" type="tf_broadcaster" name="tf_broadcaster" if="$(arg publish_odom)"/>
+  <node pkg="tf" type="static_transform_publisher" name="tf_camera_slam" args = "0 0 0 0 0 0 camera_link camera 100"/>
+
+  <!-- Run depth to pointcloud nodelet to simulate the whole pipe -->
+  <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen" />
+  <node pkg="nodelet" type="nodelet" name="reasense_depth2pointcloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen">
+    <remap from="depth_registered/image_rect" to="/camera/aligned_depth_to_color/image_raw" />
+    <remap from="rgb/image_rect_color"        to="/camera/color/image_raw" />
+    <remap from="rgb/camera_info"             to="/camera/aligned_depth_to_color/camera_info" />
+    <remap from="depth_registered/points"     to="/new_pointcloud"/>
+  </node>
+    <!-- PCL filter -->
+  <node pkg="sensors" name="pcl_filter" type="pcl_filter" output="screen" >
+      <param name="robot_height"  value="0.4" />
+      <param name="max_height"    value="1.2" />
+      <param name="n_scans_above" value="1" />
+      <param name="n_scans_below" value="1" />
+      <remap from="pcl" to="new_pointcloud" />
+  </node>
+    <!-- Laserscan (from the depth_image) -->
+  <node pkg="sensors" name="min_scan" type="min_2Dscan">
+    <remap from="pcl" to="pcl_filtered" />
+  </node>
+
+</launch>

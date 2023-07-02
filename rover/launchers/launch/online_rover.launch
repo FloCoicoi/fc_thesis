@@ -1,0 +1,60 @@
+<launch>
+  <arg name="record_realsense" default="false"/>
+  <arg name="record_luxonis" default="false"/>
+  <arg name="use_realsense" default="true"/>
+  <arg name="launch_motors" default="true"/>
+
+  <!-- +++++++++++++ Rover control and teleop +++++++++++++ -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- Launch the real rover nodes (should be launched when we turned on the rover) -->
+      <include file="$(find roverrobotics_driver)/launch/zero2_teleop.launch" if="$(arg launch_motors)" />
+    <!-- Launch basic controller -->
+      <node pkg="rover_controller" type="basic_controller" name="basic_controller"/>
+    <!-- Rumble if obstacle is detected -->
+      <include file="$(find collision_avoidance)/launch/collision_avoidance.launch"/>
+
+
+  <!-- +++++++++++++ Sensing and localization +++++++++++++ -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- Run rgbd to pointcloud nodelet for realsense use only -->
+      <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen" if="$(arg use_realsense)"/>
+      <node pkg="nodelet" type="nodelet" name="reasense_depth2pointcloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen" if="$(arg use_realsense)">
+        <remap from="depth_registered/image_rect" to="/camera/aligned_depth_to_color/image_raw" />
+        <remap from="rgb/image_rect_color"        to="/camera/color/image_raw" />
+        <remap from="rgb/camera_info"             to="/camera/aligned_depth_to_color/camera_info" />
+        <remap from="depth_registered/points"     to="/new_pointcloud"/>
+      </node>
+    <!-- Run realsense camera node -->
+      <include file="$(find sensors)/launch/realsense_camera.launch"/>
+    <!-- Run the 2DLidarscan node -->
+      <node pkg="sensors" type="min_2Dscan" name="min2Dscan" />
+    <!-- Run odometry (visual or wheel odometry)-->
+      <include file="$(find localization)/launch/localization.launch"/>
+    <!-- Run the additional tf_broadcaster -->
+      <include file="$(find rover_tf_publisher)/launch/static_broadcaster.launch"/>
+
+
+  <!-- +++++++++++++ Vizualization and record +++++++++++++ -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- Visualization -->
+      <node pkg="rviz" type="rviz" name="rviz" args="-d $(find sensors)/rviz/pseudolidar.rviz"/>
+    <!-- Record rosbag -->
+      <group if="$(arg record_realsense)">
+        <node name="real_record" pkg="rosbag" type="record"
+        args="record /rosout /tf /cmd_vel /odom /odom_visual /odometry/filtered /camera/color/image_raw
+        /camera/aligned_depth_to_color/camera_info /camera/aligned_depth_to_color/image_raw /camera/infra1/image_rect_raw
+        /camera/infra2/image_rect_raw /camera/infra1/camera_info "/>
+      </group>
+      <group if="$(arg record_luxonis)">
+        <node name="lux_record" pkg="rosbag" type="record"
+        args="record /rosout /tf /cmd_vel /odom /odom_visual /odometry/filtered  /luxonis/depth/aligned_to_rgb
+        /luxonis/depth/centered/cam_info /luxonis/depth/centered/image /luxonis/rgb/cam_info
+        /luxonis/rgb/image /luxonis/stereo/left/cam_info /luxonis/stereo/left/image /luxonis/stereo/right/image"/>
+      </group>
+
+
+  <!-- Other utilities -->
+    <!-- Run the goalstamped publisher-->
+      <node type="goal_stamped_pub" name="goal_stamped_pub" pkg="goal_publisher" />
+
+</launch>

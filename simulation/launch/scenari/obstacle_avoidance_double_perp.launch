@@ -1,0 +1,49 @@
+<launch>
+
+  <arg name="use_dwa"  default="false" />
+  <arg name="use_pcl" default="true" />
+  <arg name="obstacle_detection" default="true" />
+  <arg name="record_rosbag" default="false" />
+
+  <node pkg="tf" type="static_transform_publisher" name="tf_mapodom" args = "0 0 0 0 0 0 map odom 100" />
+
+  <include file="$(find simulation)/launch/simulation.launch">
+    <arg name="world_name" value="large_room_bis" />
+  </include>
+
+  <include file="$(find simulation)/launch/obstacles/linear_waiter.launch" >
+    <arg name="publish_obst" value="true" unless="$(arg obstacle_detection)" />
+    <arg name="x"  value="7" />
+    <arg name="y"  value="-3.0"/>
+    <arg name="vx" value="-0.1" />
+    <arg name="vy" value="0.4" />
+  </include>
+
+  <include file="$(find simulation)/launch/obstacles/linear_waiter.launch" >
+    <arg name="publish_obst" value="true" unless="$(arg obstacle_detection)" />
+    <arg name="obst_name"  value="obst2" />
+    <arg name="x"  value="4.0" />
+    <arg name="y"  value="1.5"/>
+    <arg name="vx" value="0.0" />
+    <arg name="vy" value="-0.4" />
+  </include>
+
+  <node name="obst_pub" type="obstacle_publisher.py" pkg="simulation" unless="$(arg obstacle_detection)" output="screen" >
+    <param name="~/obst_names" value="obst1, obst2" />
+  </node>
+
+  <include file="$(find simulation)/launch/move_base.launch" if="$(arg use_dwa)">
+    <arg name="map_name"  value="large_room_bis" />
+  </include>
+  <include file="$(find simulation)/launch/robot_nav.launch" unless="$(arg use_dwa)">
+    <arg name="map_name"  value="large_room_bis" />
+    <arg name="use_pcl" value="$(arg use_pcl)" />
+    <arg name="use_amcl" value="false" />
+    <arg name="obstacle_detection" value="$(arg obstacle_detection)" />
+    <arg name="record_rosbag" value="$(arg record_rosbag)" />
+  </include>
+
+  <!-- Publish a goal after a few seconds -->
+  <!-- node pkg="rostopic" type="rostopic" name="simplescenario_goal_publisher" args="pub -1 /goal geometry_msgs/Pose '{position: {x: 8.0, y: 0.0, z: 0.0}, orientation: {x: 0.0,y: 0.0,z: 0.0,w: 1.0}}' " /-->
+
+</launch>

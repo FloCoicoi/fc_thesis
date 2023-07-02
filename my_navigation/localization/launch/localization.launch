@@ -1,0 +1,20 @@
+<launch>
+  <!-- Run Visual Odometry-->
+  <node pkg="rtabmap_ros" type="rgbd_odometry" name="rgdb_odometry">
+    <remap from="rgb/image" to="/camera/color/image_raw"/>
+    <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+    <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
+    <remap from="odom" to="odom_visual"/>
+    <param name="vo_frame_id" value="vo_odom" />
+    <param name="frame_id"    value="base_footprint" />
+    <param name="publish_tf"  value="false" />
+
+    <!-- Should be true for not synchronized camera topics (e.g., false for kinectv2, zed, realsense, true for xtion, kinect360)-->
+    <param name="approx_sync" value="false"/>
+  </node>
+
+  <!-- Run EKF-->
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    <rosparam command="load" file="$(find localization)/config/ekf.yaml" />
+  </node>
+</launch>

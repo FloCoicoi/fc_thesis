@@ -1,0 +1,48 @@
+local_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+  track_unknown_space: true
+  always_send_full_costmap: true
+  footprint_topic: "footprint"
+  width: 6
+  height: 6
+  #origin_x: -3
+  #origin_y: -3
+  resolution: 0.05
+  update_frequency: 10.0
+  publish_frequency: 4.0
+  rolling_window: true
+
+  #footprint: [[-0.27,-0.22], [0.27,-0.22], [0.27,0.22], [-0.27,0.22]]
+  robot_radius: 0.28
+  footprint_padding: 0.02
+
+  dynobst_layer:
+    #combination_method: ?
+    transform_tolerance: 0.2
+    observation_sources: pcl_source
+    pcl_source: {
+      topic: static_pcl,
+      sensor_frame: base_link,
+      observation_persistence: 0.0,
+      expected_update_rate: 0.2,
+      data_type: PointCloud2,
+      min_obstacle_height: 0.05,
+      robot_height: 0.40,
+      max_obstacle_height: 1.40,
+      above_robot_factor: 1.0,
+      inf_is_valid: false,
+      clearing: true,
+      marking: true
+    }
+    obstacle_range: 5.0
+    raytrace_range: 5.0
+
+  inflation_layer:
+    cost_scaling_factor: 3.3
+    inflation_radius: 1.0 # Max inflation distance (meters)
+    inflate_unknown: false
+
+  plugins:
+   - {name: dynobst_layer, type: "dynobst_layer::DynobstLayer"}
+   - {name: inflation_layer, type: "costmap_2d::InflationLayer"}

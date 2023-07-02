@@ -1,0 +1,60 @@
+<launch>
+  <arg name="use_minscan" default="true" />
+  <arg name="use_pcl" default="true" />
+
+  <node name="obst_nodelet_manager" pkg="nodelet" type="nodelet" args="manager" output="screen">
+    <param name="num_worker_threads" value="20"/>
+  </node>
+  <node name="obstacle_extractor" pkg="nodelet" type="nodelet" args="load obstacle_detector/ObstacleExtractor obst_nodelet_manager" output="screen">
+    <param name="active"               value="true"/>
+    <param name="use_scan"             value="$(eval arg('use_pcl') == false)"/>
+    <param name="use_pcl"              value="false"/>
+    <param name="use_pcl2"             value="$(arg use_pcl)"/>
+
+    <param name="segments_as_fov"     value="true" />
+
+    <param name="use_split_and_merge"        value="true"/>
+    <param name="circles_from_visibles"      value="true"/>
+    <param name="circles_from_foreground"    value="false"/>
+    <param name="discard_converted_segments" value="true"/>
+    <param name="transform_coordinates"      value="true"/>
+
+    <param name="min_group_points"     value="8"/>
+
+    <param name="max_group_distance"   value="0.1"/>
+    <param name="distance_proportion"  value="0.00218"/> <!--This is the expected resolution in radians of the input-->
+    <param name="max_split_distance"   value="0.2"/>
+    <param name="max_merge_separation" value="0.3"/> <!-- segment max dist for merge -->
+    <param name="max_merge_spread"     value="0.2"/> <!-- segment max colinearity score -->
+    <param name="max_circle_radius"    value="1.0"/>
+    <param name="radius_enlargement"   value="0.1"/>
+
+    <param name="min_range"            value="0.5" />
+    <param name="max_range"            value="10.0"/>
+    <param name="NULL_H"               value="-1.0" /> <!-- Points at this height in the pointcloud are ignored -->
+
+    <param name="frame_id"             value="map"/>
+    <!--remap from="scan" to="min_scan/scan" if="$(arg use_minscan)" /-->
+    <remap from="pcl2"   to="/pcl_filtered" if="$(arg use_pcl)" />
+  </node>
+
+  <node name="obstacle_tracker" pkg="nodelet" type="nodelet" args="load obstacle_detector/ObstacleTracker obst_nodelet_manager" output="screen">
+    <param name="active"                  value="true"/>
+
+    <param name="loop_rate"               value="25.0"/>
+    <param name="tracking_duration"       value="4.0"/>
+    <param name="min_correspondence_cost" value="0.4"/>
+    <param name="std_correspondence_dev"  value="0.15"/>
+    <param name="process_variance"        value="0.01"/>
+    <param name="process_rate_variance"   value="0.01"/>
+    <param name="measurement_variance"    value="0.1"/>
+    <param name="radius_growth"           value="0.2"/>
+
+
+    <param name="frame_id"                value="map"/>
+    <param name="publish_min_speed"       value="0.3"/>
+
+    <remap from="tracked_obstacles" to="obstacles"/>
+  </node>
+
+</launch>

@@ -1,0 +1,30 @@
+<launch>
+    <arg name="bag_file" default=""/>
+    <arg name="use_scan" default="false"/>
+    <arg name="publish_tf" default="false"/>
+
+    <!-- Play rosbag -->
+    <node pkg="rosbag" type="play" name="player" output="screen" args="--clock $(arg bag_file)"/>
+
+    <!-- Visualize results -->
+    <include file="$(find visualization)/launch/offline_visualization.launch"/>
+
+    <!-- If use scan is true, launch the appropriate -->
+  <!-- pointcloud converter and the pseudo scan node -->
+    <!-- Pointcloud converter -->
+    <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen" if="$(arg use_scan)"/>
+    <node pkg="nodelet" type="nodelet" name="reasense_depth2pointcloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen">
+      <remap from="depth_registered/image_rect" to="/camera/aligned_depth_to_color/image_raw" />
+      <remap from="rgb/image_rect_color"        to="/camera/color/image_raw"/>
+      <remap from="rgb/camera_info"             to="/camera/aligned_depth_to_color/camera_info"/>
+      <remap from="depth_registered/points"     to="/new_pointcloud"/>
+    </node>
+
+    <!-- Pseudolidar -->
+    <node pkg="sensors" name="min_scan" type="min_2Dscan" if="$(arg use_scan)"/>
+
+    <!-- Publish tf if required -->
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_opt" args = "0 0 0 -1.570796 0 -1.57 camera camera_color_optical_frame 100" if="$(arg publish_tf)"/>
+
+
+</launch>

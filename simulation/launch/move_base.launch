@@ -1,0 +1,36 @@
+<launch>
+  <arg name="map_name" default="large_room"/>
+  <arg name="use_amcl" default="true" />
+  <arg name="record_rosbag" default="false" />
+
+  <!-- Run the map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find simulation)/maps/$(arg map_name).yaml"/>
+
+  <!--- Run AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl" if="$(arg use_amcl)" >
+      <param name="max_particles" value="5000" />
+      <param name="odom_model_type" value="diff-corrected" />
+      <param name="odom_alpha1" value="0.005"/>
+      <param name="odom_alpha2" value="0.005"/>
+      <param name="odom_alpha3" value="0.010"/>
+      <param name="odom_alpha4" value="0.005"/>
+      <!--param name="odom_alpha5" value="0.003"-->
+      <!--remap from="map" to="move_base/global_costmap/costmap"/-->
+    </node>
+
+  <!-- Run the move_base configs -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <rosparam file="$(find simulation)/map_configuration/costmap_common_params.yaml" command="load" ns="global_costmap" />
+      <rosparam file="$(find simulation)/map_configuration/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find simulation)/map_configuration/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find simulation)/map_configuration/global_costmap_params.yaml" command="load" />
+      <rosparam file="$(find simulation)/map_configuration/base_local_planner_params.yaml" command="load" />
+    </node>
+
+  <!-- Record setup in a separate file -->
+  <include file="$(find nav_utils)/launch/record_sim.launch" if="$(arg record_rosbag)" />
+
+  <!-- Open the rviz config for the robot_navigation package -->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find simulation)/vizuals/sim_nav.rviz"/>
+
+</launch>

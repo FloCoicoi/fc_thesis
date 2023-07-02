@@ -1,0 +1,18 @@
+<launch>
+  <param name="use_sim_time" value="true" />
+  <arg name="model_name" default="teleop_box" />
+  <arg name="x"   default="0.0"/>
+  <arg name="y"   default="0.0"/>
+  <arg name="z"   default= "1"/> <!-- slight drop for small ball -->
+
+  <!-- make sure all colors are available -->
+  <param name="obst_description"   command="$(find xacro)/xacro '$(find simulation)/urdf/teleop_cylinder.urdf.xacro' model_name:=$(arg model_name)" />
+
+  <!-- add ball of specified color and id to the gazebo simlation at the given coordinates -->
+  <node name="$(arg model_name)" pkg="gazebo_ros" type="spawn_model" args="-param obst_description -urdf -x $(arg x) -y $(arg y) -z $(arg z) -model $(arg model_name)" output="screen" />
+
+  <node name="$(arg model_name)_teleop" pkg="nav_utils" type="teleop_twist_keyboard.py" output="screen">
+    <remap from="cmd_vel" to="/$(arg model_name)_cmd_vel" />
+  </node>
+
+</launch>

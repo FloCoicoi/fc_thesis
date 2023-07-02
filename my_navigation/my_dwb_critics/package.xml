@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>my_dwb_critics</name>
+  <version>0.0.0</version>
+  <description>The my_dwb_critics package</description>
+
+  <maintainer email="flo@todo.todo">flo</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>dwb_local_planner</build_depend>
+  <build_depend>nav_core_adapter</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>obstacle_detector</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>dwb_critics</build_depend>
+  <build_depend>costmap_queue</build_depend>
+  <build_export_depend>dwb_local_planner</build_export_depend>
+  <build_export_depend>nav_core_adapter</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>obstacle_detector</build_export_depend>
+  <build_export_depend>pluginlib</build_export_depend>
+  <build_export_depend>dwb_critics</build_export_depend>
+  <build_export_depend>costmap_queue</build_export_depend>
+  <exec_depend>dwb_local_planner</exec_depend>
+  <exec_depend>nav_core_adapter</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>obstacle_detector</exec_depend>
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>dwb_critics</exec_depend>
+  <exec_depend>costmap_queue</exec_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+      <dwb_local_planner plugin="${prefix}/set_plugins.xml"/>
+  </export>
+</package>

@@ -1,0 +1,32 @@
+<launch>
+  <arg name="map_name"   default="large_room" />
+
+  <param name="use_sim_time" value="true" />
+
+  <!-- Run goal publisher -->
+  <node pkg="goal_publisher" type="locogoal_pub" name="goal_publisher" />
+
+  <!-- Start the map server to make the static map available -->
+  <node pkg="nav_grid_server" type="server" name="map_server" args="path/to/maps/$(arg map_name).yaml" />
+
+  <node pkg="amcl" type="amcl" name="amcl" >
+      <param name="max_particles" value="5000" />
+      <param name="odom_model_type" value="diff-corrected" />
+      <param name="odom_alpha1" value="0.005"/>
+      <param name="odom_alpha2" value="0.005"/>
+      <param name="odom_alpha3" value="0.010"/>
+      <param name="odom_alpha4" value="0.005"/>
+      <!--param name="odom_alpha5" value="0.003"-->
+      <!--remap from="map" to="move_base/global_costmap/costmap"/-->
+  </node>
+
+  <!-- Launch locomotor with params -->
+  <node name="locomotor" pkg="locomotor" type="locomotor1" output="screen">
+    <rosparam file="$(find my_package)/config/global_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find my_package)/config/local_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find my_package)/config/global_planner_params.yaml" command="load"/>
+    <rosparam file="$(find my_package)/config/local_planner_params.yaml" command="load"/>
+  </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find my_package)/rviz_config.rviz"/>
+</launch>

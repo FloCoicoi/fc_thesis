@@ -1,0 +1,25 @@
+<class_libraries>
+  <library path="lib/libmy_dwb_critics">
+    <class type="my_dwb_critics::DynamicAvoidanceCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Penalize trajectories that collide with or get too close to moving obstacles</description>
+    </class>
+    <class type="my_dwb_critics::VONHCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Penalize trajectories that would eventually collide with an obstacle</description>
+    </class>
+    <class type="my_dwb_critics::AdaptedVOCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Favors trajectories that lead to easy collision free situations</description>
+    </class>
+    <class type="my_dwb_critics::StaticObstacleCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Penalize trajectories that collide with or get too close to static obstacles</description>
+    </class>
+    <class type="my_dwb_critics::PathFollowanceCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Favors trajectories that follow the global path guidance</description>
+    </class>
+    <class type="my_dwb_critics::InertiaCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Favors cmd_vels closer to the previous one to prevent oscillations in symetrical situations</description>
+    </class>
+    <class type="my_dwb_critics::OrientToGoalCritic" base_class_type="dwb_local_planner::TrajectoryCritic">
+      <description>Sets trajectories to be illegal when near goal and not stopping, and favors rotating to goal when close enough</description>
+    </class>
+  </library>
+</class_libraries>

@@ -1,0 +1,9 @@
+<launch>
+  <!-- Run Realsense camera-->
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="align_depth" value="true"/>
+    <arg name="enable_infra1" value="true"/>
+    <arg name="enable_infra2" value="true"/>
+  </include>
+
+</launch>

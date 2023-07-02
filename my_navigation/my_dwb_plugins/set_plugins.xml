@@ -1,0 +1,7 @@
+<class_libraries>
+  <library path="lib/libmy_dwb_plugins">
+    <class type="my_dwb_plugins::DoubleTrajectoryGenerator" base_class_type="dwb_local_planner::TrajectoryGenerator">
+      <description>Generates trajectories by applying a sequence of two cmd_vel during sim_time instead of just one</description>
+    </class>
+  </library>
+</class_libraries>

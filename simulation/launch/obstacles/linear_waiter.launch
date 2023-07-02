@@ -1,0 +1,50 @@
+<launch>
+  <!-- rosparams -->
+  <param name="use_sim_time" value="true" />
+  <arg name="publish_obst"  default="false" />
+  <arg name="run_publisher" default="false" />
+
+  <!-- Controller params -->
+  <arg name="obst_name"  default="obst1" />
+  <arg name="wait_topic" default="cmd_vel" />
+  <arg name="vx"         default="0.0" />
+  <arg name="vy"         default="0.3" />
+
+  <!-- gazebo params -->
+  <arg name="x"   default="0.0"/>
+  <arg name="y"   default="0.0"/>
+  <arg name="z"   default="1.0"/>
+
+  <!-- Measurement noise params -->
+  <arg name="vel_noise_std"   default="0.0" />
+  <arg name="pose_noise_std"  default="0.0" />
+
+  <!-- make sure all colors are available -->
+  <param name="$(arg obst_name)_description"   command="$(find xacro)/xacro '$(find simulation)/urdf/teleop_cylinder.urdf.xacro' model_name:=$(arg obst_name)" />
+
+  <!-- add ball of specified color and id to the gazebo simlation at the given coordinates -->
+  <node name="$(arg obst_name)" pkg="gazebo_ros" type="spawn_model" args="-param $(arg obst_name)_description -urdf -x $(arg x) -y $(arg y) -z $(arg z) -model $(arg obst_name)" output="screen" />
+
+  <node name="$(arg obst_name)_controller" pkg="simulation" type="obstacle_controller.py" output="screen">
+    <param name="~/new_obst_name" value="$(arg obst_name)" />
+    <param name="~/wait_topic"   value="$(arg wait_topic)" />
+    <param name="~/vx"           value="$(arg vx)" />
+    <param name="~/vy"           value="$(arg vy)" />
+    <remap from="cmd_vel_obst" to="$(arg obst_name)_cmd_vel" />
+  </node>
+
+  <node name="$(arg obst_name)_pub" type="obstacle_publisher.py" pkg="simulation" output="screen" if="$(arg run_publisher)">
+    <param name="~/obst_names"    value="$(arg obst_name)" />
+    <param name="vel_noise_std"   value="$(arg vel_noise_std)" />
+    <param name="pose_noise_std"  value="$(arg pose_noise_std)" />
+    <param name="pub_topic"       value="obstacles" />
+  </node>
+
+  <node name="$(arg obst_name)_perfect_pub" type="obstacle_publisher.py" pkg="simulation" output="screen" if="$(arg run_publisher)">
+    <param name="~/obst_names"    value="$(arg obst_name)" />
+    <param name="pub_topic"       value="/perfect_obstacles" />
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="tf_$(arg obst_name)" args = "0 0 0 0 0 0 map $(arg obst_name)_odom 10"/>
+
+</launch>

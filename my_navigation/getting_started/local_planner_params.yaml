@@ -1,0 +1,71 @@
+twist_topic: cmd_vel
+twist_type: Twist3D
+controller_frequency: 10.0
+
+DWBLocalPlanner:
+  update_costmap_before_planning: true
+  prune_plan: true
+  prune_distance: 0.1
+  short_circuit_trajectory_evaluation: true # This reduces computation time with no side effects
+  #debug_trajectory_details: true
+  publish_cost_grid_pc: true
+  publish_evaluation: true
+  
+  # Goal checker
+  goal_checker_name: dwb_plugins::StoppedGoalChecker
+  rot_stopped_velocity: 0.1
+  trans_stopped_velocity: 0.1
+  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.2
+  
+  # Trajectory generator
+  trajectory_generator_name: dwb_plugins::StandardTrajectoryGenerator
+  # velocities
+  min_vel_x: 0.0
+  max_vel_x: 0.5
+  min_vel_y: 0.0
+  max_vel_y: 0.0
+  max_vel_theta: 0.75
+  # absolute speeds (in either direction)
+  min_speed_xy: 0.0
+  max_speed_xy: 0.5
+  min_speed_theta: 0.0
+  # acceleration
+  acc_lim_x: 8.0
+  acc_lim_y: 0.0
+  acc_lim_theta: 8.0
+  # deceleration
+  decel_lim_x: -8.0
+  decel_lim_y: 0.0
+  decel_lim_theta: -8.0
+  # velocity sampling
+  vx_samples: 9
+  vtheta_samples: 9
+  vy_samples: 1 # It then gets set to 2 in the one_d_velocity_iterator.h, line 156. Thus computation is done twice for nothing
+  # sim time and granularity
+  sim_time: 2.5
+  linear_granularity: 0.05
+  angular_granularity: 0.05
+  
+  # Critics: they are evaluated in this order
+  default_critic_namespaces: ["my_dwb_critics", "dwb_critics"]
+  critics: ["PathDist", "GoalDistCritic", "BaseObstacle", "RotateToGoal", "DynamicAvoidance"]
+  GoalDist:
+    scale: 6.0 # For some reason this scale is then multiplied by map_resolution*0.5
+  PathDist:
+    scale: 2.0 # For some reason this scale is then multiplied by map_resolution*0.5
+  #PathAlign:
+    #scale: 5.0 # PathAlign just performs a PathDist at a forward point
+    #forward_point_distance: 0.2
+  BaseObstacle:
+    sum_scores: "sum" # If set to "sum", it gets larger and larger with the sim_time and granularity
+    scale: 0.005      # So the scale must be accordingly small
+  DynamicAvoidance:
+    scale: 0.5
+    aggregation_mode: "max"
+    decrease_rate: 4.0
+    traj_step: 2
+  
+
+  
+  

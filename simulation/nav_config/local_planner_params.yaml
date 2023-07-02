@@ -1,0 +1,119 @@
+twist_topic: cmd_vel
+twist_type: Twist3D
+controller_frequency: 10.0
+
+DWBLocalPlanner:
+  update_costmap_before_planning: false
+  prune_plan: true
+  prune_distance: 0.6
+  #debug_trajectory_details: true
+  publish_cost_grid_pc: true
+  publish_evaluation: true
+
+  # Goal checker
+  goal_checker_name: dwb_plugins::StoppedGoalChecker
+  rot_stopped_velocity: 0.01
+  trans_stopped_velocity: 0.01
+  xy_goal_tolerance: 0.3
+  yaw_goal_tolerance: 0.2
+
+  # Trajectory generator
+  trajectory_generator_name: my_dwb_plugins::DoubleTrajectoryGenerator #dwb_plugins::StandardTrajectoryGenerator #my_dwb_plugins::DoubleTrajectoryGenerator
+  # velocities
+  min_vel_x: -0.3
+  max_vel_x: 0.7
+  min_vel_y: 0.0
+  max_vel_y: 0.0
+  max_vel_theta: 0.75
+  # acceleration
+  acc_lim_x: 8.0
+  acc_lim_y: 0.0
+  acc_lim_theta: 8.0
+  # deceleration
+  decel_lim_x: -8.0
+  decel_lim_y: 0.0
+  decel_lim_theta: -8.0
+  # absolute speeds (in either direction)
+  min_speed_xy: 0.0
+  max_speed_xy: 0.71
+  min_speed_theta: 0.0
+  # sim time and granularity
+  sim_time: 2.5
+  switch_time: 1.5 # Based on the rotational speed
+  discretize_by_time: false
+  time_granularity: 0.025 # This one is ignored if discretize_by_time is false
+  linear_granularity: 0.05 # These two are ignored if discretize_by_time is true
+  angular_granularity: 0.05
+  # velocity sampling
+  vx_samples: 5
+  vtheta_samples: 7
+  vy_samples: 1 # It then gets set to 2 in the one_d_velocity_iterator.h, line 156. Thus computation is done twice for nothing
+  vx2_samples: 2
+  vtheta2_samples: 2
+  vy2_samples: 1
+
+  ## Critics:
+  short_circuit_trajectory_evaluation: false # This reduces computation time with no side effects
+  # The namespaces are used in this order when trying to resolve the critics names. So if you have a critic
+  # under a new namespace but that has the same name a different critic in another namespace, ordering the
+  # namespace list is a necessity.
+  default_critic_namespaces: ["my_dwb_critics", "dwb_critics"]
+
+  # The order in which you set the critics actually matters.
+  # the critics are called one after the other when evaluating a trajectory. And if you set
+  # the short_circuit_trajectory_evaluation to true, then evaluation stops when the trajectory score gets
+  # larger than the current minimum so as to save time without altering the result.
+  # So you should set first the critics with high score values and low computation time
+  critics: ["OrientToGoal", "StaticObstacle", "PathFollowance",  "Inertia", "DynamicAvoidance"] #"AdaptedVO"] #"VONH"]
+
+  # Here I set StaticObstacle first because it throws illegal trajectories
+  # Then PathFollowance has a very long prepare() but very fast scoreTrajectory so calling it many times for scoring
+  # is better, and it tend to produce quite high costs
+  # DynamicAvoidance is a bit longer to compute so it falls a bit farther in the list and finally Inertia is fast
+  # to compute but it usually won't make a difference so it is better at the bottom of the list
+  PathFollowance:
+    scale: 0.1 # For some reason this scale is then multiplied by map_resolution*0.5
+    aggregation_type: "sum" # Choosing sum will actually perform a mean so that the scale is not perturbed and so
+    # that the number of poses of a trajectory does not change the score. This is especially relevant when using a
+    # spacial criterion to discretize the trajectories
+    path_slope_factor: 2.5 # How much better is it to be farther along the path than to be close to the path
+    orientation_goal: 1.3 # The maximum heading absolute difference we should aim at (bit less than pi/2)
+    orientation_scale: 1.0 # Scales the contribution for the orientation difference (can be zero)
+  StaticObstacle:
+    scale: 0.0005              # So the scale must be accordingly small
+    aggregation_mode: "sum"  # "sum", "last" or "max"
+    security_delay: 1.2       # Number of second the robot must stop before collision
+  DynamicAvoidance:
+    scale: 0.1 # The critic uses a exponential-based metric so a small scale is better
+    aggregation_mode: "sum"
+    decrease_rate: 3.3
+    collision_penalty: 1.0
+    traj_step: 1
+    robot_radius: 0.3
+    obstacle_topic: "/obstacles"
+    tcc: 2.0
+    time_decrease_rate: 0.5
+    orient_scale: 0.0
+    orient_step: 2
+  # VONH:
+  #   scale: 0.1
+  #   tcc: 3.0
+  #   decrease_rate: 0.5
+  #   robot_radius: 0.4
+  #   voh_step: 2
+  AdaptedVO:
+    scale: 0.1
+    tc: 2.0             # if t<tc, tc will be used for the score
+    time_scale: 0.1     # higher values tend to make the robot react later to future collisions
+    dist_decay: 3.3     # Same as in static obstacles
+    robot_radius: 0.3   # You can add a small security margin to the robot radius
+    traj_step: 1        # Used to skip some traj poses to save computation
+  Inertia:
+    scale: 0.005
+    x_weight: 1.0
+    y_weight: 0.0
+    theta_weight: 0.64 # roughly 2/pi
+  OrientToGoal: # returns 0.0 if farther than xy_goal_tolerance, and forces to slow down and to rotate if near goal
+    scale: 0.2 # We need a critic able to beat the PathFollowance when the goal and path are oriented in opposite
+    #directions. In such cases PathFollowance would output at max (orientation_scale + remaining distance)*scale
+    activation_radius: 1.0

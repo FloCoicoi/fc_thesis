@@ -1,0 +1,46 @@
+<launch>
+
+  <arg name="sensor"    default="scan"/>
+  
+  <arg name="map_name"  default="$(find sensors)/maps/vb_office_small.yaml"/>
+
+  <master auto="start"/>
+  
+  
+ <!-- Run the map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_name)"/>
+
+
+ <!--- Run AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl" >
+      <remap from="scan"   to="min_scan/scan"/>
+      <param name="min_particles"   value="1000" />
+      <param name="max_particles"   value="5000" />
+      <param name="update_min_d"    value="0.1" />
+      <param name="update_min_a"    value="0.125" />
+      <param name="kld_err"         value="0.1" />
+      <param name="kld_z"           value="0.90" />
+      <param name="odom_model_type" value="diff-corrected" />
+      <param name="odom_alpha1"     value="0.005"/>
+      <param name="odom_alpha2"     value="0.005"/>
+      <param name="odom_alpha3"     value="0.02"/>
+      <param name="odom_alpha4"     value="0.02"/>
+      <!--param name="odom_alpha5"  value="0.003"-->
+      <param name="laser_max_beams" value="64" />
+      <param name="laser_z_hit"     value="0.90" />
+      <param name="laser_z_rand"    value="0.10" />
+      <param name="resample_interval"   value="2"  />
+    </node>
+    
+    
+ <!-- Run move_base -->
+
+   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+     <rosparam file="$(find rover_nav)/config/perception_params_$(arg sensor).yaml" command="load" ns="global_costmap" />
+     <rosparam file="$(find rover_nav)/config/perception_params_$(arg sensor).yaml" command="load" ns="local_costmap" />
+     <rosparam file="$(find rover_nav)/config/local_costmap_params.yaml" command="load" />
+     <rosparam file="$(find rover_nav)/config/global_costmap_params.yaml" command="load" />
+     <rosparam file="$(find rover_nav)/config/base_local_planner_params.yaml" command="load" />
+   </node>
+
+</launch>

@@ -1,0 +1,11 @@
+<launch>
+  <param name="use_sim_time" value="true" />
+  <arg name="model_name" default="moving_box" />
+  <arg name="x"   default="0.0"/>
+  <arg name="y"   default="0.0"/>
+  <arg name="z"   default= "1"/> <!-- slight drop for small ball -->
+
+  <!-- add ball of specified color and id to the gazebo simlation at the given coordinates -->
+  <node name="$(arg model_name)" pkg="gazebo_ros" type="spawn_model" args="-file $(find simulation)/urdf/random_moving_box.urdf -urdf -x $(arg x) -y $(arg y) -z $(arg z) -model $(arg model_name)" output="screen" />
+
+</launch>

@@ -1,0 +1,51 @@
+<launch>
+  <arg name="record_rosbag" default="false"/>
+  <arg name="world_name" default="large_room"/>
+  <param name="use_sim_time" value="true"/>
+
+  <!-- +++++++++++++++ Launch the simulation +++++++++++++++-->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <include file="$(find roverrobotics_simulation)/launch/gazebo/4wd_rover_gazebo.launch">
+      <arg name="world_name" value="$(arg world_name).world" />
+    </include>
+    <!-- Launch basic controller -->
+      <node pkg="rover_controller" type="basic_controller" name="basic_controller"/>
+    <!-- Publish required static tf -->
+      <node pkg="tf" type="static_transform_publisher" name="tf_camera"         args = "0 0 0 0 0 0 camera_link camera 50"/>
+
+  <!-- +++++++++++++ Sensing and localization +++++++++++++ -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+      <!-- Run rgbd to pointcloud nodelet for realsense use only -->
+      <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen" />
+      <node pkg="nodelet" type="nodelet" name="reasense_depth2pointcloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen">
+        <remap from="depth_registered/image_rect" to="/camera/aligned_depth_to_color/image_raw" />
+        <remap from="rgb/image_rect_color"        to="/camera/color/image_raw" />
+        <remap from="rgb/camera_info"             to="/camera/aligned_depth_to_color/camera_info" />
+        <remap from="depth_registered/points"     to="/new_pointcloud"/>
+      </node>
+    <!-- PCL filter -->
+      <node pkg="sensors" name="pcl_filter" type="pcl_filter" output="screen" >
+          <param name="robot_height"  value="0.4" />
+          <param name="max_height"    value="1.2" />
+          <param name="n_scans_above" value="1" />
+          <param name="n_scans_below" value="1" />
+          <remap from="pcl" to="new_pointcloud" />
+      </node>
+    <!-- Laserscan (required for the amcl node) -->
+      <node pkg="sensors" name="min_scan" type="min_2Dscan">
+        <remap from="pcl" to="pcl_filtered" />
+      </node>
+    <!-- Run odometry (visual or wheel odometry)-->
+      <include file="$(find localization)/launch/localization.launch"/>
+
+  <!-- +++++++++++++ Vizualization and record +++++++++++++ -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- Record rosbag -->
+      <group if="$(arg record_rosbag)">
+        <node name="bag_record" pkg="rosbag" type="record"
+        args="record /rosout /tf /cmd_vel /odom /odom_visual /odometry/filtered /camera/color/image_raw
+        /camera/aligned_depth_to_color/camera_info /camera/aligned_depth_to_color/image_raw /camera/infra1/image_rect_raw
+        /camera/infra2/image_rect_raw /camera/infra1/camera_info "/>
+      </group>
+
+</launch>

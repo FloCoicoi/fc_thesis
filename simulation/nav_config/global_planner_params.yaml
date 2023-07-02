@@ -1,0 +1,25 @@
+global_plan_topic: global_plan
+global_plan_type: Path3D
+global_plan_epsilon: -1.0
+
+DluxGlobalPlanner:
+  neutral_cost: 50
+  scale: 3.0
+  unknown_interpretation: "expensive"
+  path_caching: true
+  improvement_threshold: 2.0
+  publish_potential: false
+  print_statistics: false
+  potential_calculator: dlux_plugins::AStar
+  traceback: dlux_plugins::GradientPath
+
+  # AStar
+  manhattan_heuristic: false
+  use_kernel: true
+  minimum_requeue_change: 1.0
+
+  # GradientPath
+  step_size: 0.5
+  lethal_cost: 250.0
+  iteration_factor: 4.0
+  grid_step_near_high: false

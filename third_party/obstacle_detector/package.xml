@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>obstacle_detector</name>
+  <version>1.0.0</version>
+  <description>Detect obstacles in form of line segments and circles from 2D laser scans.</description>
+  <maintainer email="mateusz.przybyla@put.poznan.pl">Mateusz Przybyla</maintainer>
+  <author>Mateusz Przybyla</author>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <depend>tf</depend>
+  <depend>rviz</depend>
+  <depend>roscpp</depend>
+  <depend>roslaunch</depend>
+  <depend>nodelet</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>laser_geometry</depend>
+  <build_depend>libpcl-all-dev</build_depend>
+  <exec_depend>libpcl-all</exec_depend>
+  <build_export_depend>libpcl-all</build_export_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <build_export_depend>pcl_conversions</build_export_depend>
+  <build_depend>pcl_ros</build_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <build_export_depend>pcl_ros</build_export_depend>
+
+  <export>
+    <rviz plugin="${prefix}/rviz_plugins.xml"/>
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+  </export>
+</package>

@@ -1,0 +1,55 @@
+
+<launch>
+
+  <!--param name="/use_sim_time" value="true"/-->  
+  <include file="$(find obstacle_detector)/launch/tf.launch"/>
+
+  <node name="nodelet_manager" pkg="nodelet" type="nodelet" args="manager" output="screen">
+    <param name="num_worker_threads" value="20"/>
+  </node>
+
+  <node name="obstacle_publisher" pkg="nodelet" type="nodelet" args="load obstacle_detector/ObstaclePublisher nodelet_manager">
+    <param name="active"           value="true"/>
+    <param name="reset"            value="false"/>
+
+    <param name="fusion_example"   value="false"/>
+    <param name="fission_example"  value="false"/>
+
+    <param name="loop_rate"        value="20.0"/>
+    <param name="radius_margin"    value="0.25"/>
+
+    <rosparam param="x_vector">[0.0]</rosparam>
+    <rosparam param="y_vector">[5.0]</rosparam>
+    <rosparam param="r_vector">[0.5]</rosparam>
+    <rosparam param="vx_vector">[0.0]</rosparam>
+    <rosparam param="vy_vector">[-0.5]</rosparam>
+    <rosparam param="vr1">0.0</rosparam>
+
+    <param name="frame_id"         value="map"/>
+    
+    <remap from="obstacles" to="raw_obstacles" />
+  </node>
+  
+  <node name="obstacle_tracker" pkg="nodelet" type="nodelet" args="load obstacle_detector/ObstacleTracker nodelet_manager">
+    <param name="active"                  value="true"/>
+
+    <param name="loop_rate"               value="50.0"/>
+    <param name="tracking_duration"       value="4.0"/>
+    <param name="min_correspondence_cost" value="0.4"/>
+    <param name="std_correspondence_dev"  value="0.15"/>
+    <param name="process_variance"        value="0.001"/>  
+    <param name="process_rate_variance"   value="0.001"/>  
+    <param name="measurement_variance"    value="2.0"/>  
+    <param name="radius_growth"           value="0.2"/>
+    
+
+    <param name="frame_id"                value="map"/>
+    <param name="publish_min_speed"       value="0.2"/>
+
+    <remap from="tracked_obstacles" to="obstacles"/>
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find obstacle_detector)/resources/obstacle_detector.rviz"/>
+
+</launch>
+

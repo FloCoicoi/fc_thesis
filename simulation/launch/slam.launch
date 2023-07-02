@@ -1,0 +1,20 @@
+<launch>
+
+  <param name="use_sim_time" type="bool" value="true"/>
+  
+  <!-- Launch SLAM -->
+    <include file="$(find rtabmap_ros)/launch/rgbd_mapping.launch" >
+      <arg name="rgb_topic"              value="/image_raw"/>
+      <arg name="camera_info_topic"      value="/camera_info"/>
+      <arg name="depth_registered_topic" value="/depth/image_raw"/>
+      <arg name="visual_odometry"        value="false"/>
+      <arg name="frame_id"               value="camera_link"/>
+      <arg name="odom_topic"             value="odom"/>
+      <arg name="odom_frame_id"          value="odom"/>
+      <arg name="rtabmap_args"           value="--delete_db_on_start"/>
+      <arg name="subscribe_scan"         value="true"/>
+      <arg name="scan_topic"             value="/scan"/>
+    </include>
+    
+</launch>
+

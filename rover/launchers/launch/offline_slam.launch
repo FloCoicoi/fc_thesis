@@ -1,0 +1,58 @@
+<launch>
+
+  <param name="use_sim_time"  value="true"/>
+
+  <arg name="bag_file" default=""/>
+  <arg name="use_scan" default="false"/>
+  <arg name="publish_odom_tf" default="true"/>
+
+  <!-- Broadcast missing TF -->
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_opt" args = "0 0 0 -1.570796 0 -1.57 camera camera_color_optical_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_slam" args = "0 0 0 0 0 0 camera_link camera 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_link" args = "0.17 0 0.32 0 0 0 base_link camera_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_left" args = "0  0.025 0.0 -1.570796 0 -1.57 camera camera_left 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_right" args = "0 -0.025 0.0 -1.570796 0 -1.57 camera camera_right 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf_camera_virtual" args = "0 0 0.0 -1.570796 0 -1.57 camera camera_virtual 100"/>
+
+
+
+  <!-- If use scan is true, launch the appropriate -->
+  <!-- pointcloud converter and the pseudo scan node -->
+    <!-- Pointcloud converter -->
+    <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen" if="$(arg use_scan)"/>
+    <node pkg="nodelet" type="nodelet" name="reasense_depth2pointcloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen">
+      <remap from="depth_registered/image_rect" to="/camera/aligned_depth_to_color/image_raw" />
+      <remap from="rgb/image_rect_color"        to="/camera/color/image_raw" />
+      <remap from="rgb/camera_info"             to="/camera/aligned_depth_to_color/camera_info"/>
+      <remap from="depth_registered/points"     to="/new_pointcloud"/>
+    </node>
+
+    <!-- Pseudolidar -->
+    <node pkg="sensors" name="min_scan" type="min_2Dscan" if="$(arg use_scan)"/>
+
+
+
+  <!-- Launch mapping -->
+    <include file="$(find rtabmap_ros)/launch/rgbd_mapping.launch" >
+      <arg name="rgb_topic"              value="/camera/color/image_raw"/>
+      <arg name="camera_info_topic"      value="/camera/aligned_depth_to_color/camera_info" />
+      <arg name="depth_registered_topic" value="/camera/aligned_depth_to_color/image_raw"/>
+      <arg name="visual_odometry"        value="true"/>
+      <arg name="frame_id"               value="base_footprint"/>
+      <arg name="odom_topic"             value="rtab_odom"/>
+      <!--arg name="odom_frame_id"          value=""/-->
+      <arg name="wait_for_transform"     value="1.0"/>
+      <arg name="rtabmap_args"           value="--delete_db_on_start"/>
+      <arg name="subscribe_scan"         value="$(arg use_scan)"/>
+      <arg name="scan_topic"             value="/min_scan/scan"/>
+    </include>
+
+
+
+
+  <!-- Play rosbag -->
+    <node pkg="rosbag" type="play" name="player" output="screen" args=" --clock $(arg bag_file) --topics /camera/color/image_raw /camera/aligned_depth_to_color/camera_info /camera/aligned_depth_to_color/image_raw /odometry/filtered /camera/infra1/image_rect_raw /camera/infra2/image_rect_raw /camera/infra1/camera_info /camera/depth/image_rect_raw"/>
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find launchers)/off_slam_vizual.rviz"/>
+
+</launch>

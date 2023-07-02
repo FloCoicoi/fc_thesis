@@ -1,0 +1,8 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+  update_frequency: 5.0
+  publish_frequency: 1.0
+  static_map: true
+  resolution: 0.05
+  laser_scan_sensor: {sensor_frame: lidar_link, data_type: LaserScan, topic: scan, marking: true, clearing: true}

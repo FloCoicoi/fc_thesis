@@ -1,0 +1,8 @@
+<launch>
+    <node name="bag_record" pkg="rosbag" type="record"
+        args="record -o '/home/flo/rosbags/simnav_' -e '/locomotor(.*)'
+        /rosout /clock /tf /tf_static /cmd_vel /odom /amcl_pose /cmd_vel /cmd_vel/managed /odom_visual /odometry/filtered
+        /camera/color/image_raw /camera/aligned_depth_to_color/camera_info /camera/aligned_depth_to_color/image_raw
+        /map /obstacles /raw_obstacles /static_scan /static_pcl /goalstamped
+        "/>
+</launch>

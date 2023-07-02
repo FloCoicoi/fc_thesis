@@ -1,0 +1,7 @@
+<launch>
+<node pkg="tf" type="static_transform_publisher" name="tf_camera_left" args = "0  0.05 0.0 -1.570796 0 -1.57 camera camera_left 100"/>
+<node pkg="tf" type="static_transform_publisher" name="tf_camera_right" args = "0 -0.05 0.0 -1.570796 0 -1.57 camera camera_right 100"/>
+<node pkg="tf" type="static_transform_publisher" name="tf_camera_virtual" args = "0 0 0.0 -1.570796 0 -1.57 camera camera_virtual 100"/>
+<node pkg="tf" type="static_transform_publisher" name="tf_map_camera" args="0.0 0.0 0.0 0.0 0.0 0.0 map camera 100"/>
+<node pkg="tf" type="static_transform_publisher" name="tf_map_lidar" args="0 0 0 0 0 0 map lidar_link 100"/>
+</launch>

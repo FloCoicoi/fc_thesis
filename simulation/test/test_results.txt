@@ -1,0 +1,249 @@
+
+Jan-25-2023 14:50:50 (dist)
+Scenario      Success  Path length  Curvature
+ perp             1      7.089      2.075
+
+ front            0      7.114      4.858
+
+ overtake         1      9.692      3.535
+
+Feb-01-2023 13:50:47 (VOH + dist)
+ Scenario      Success  Path length  Curvature
+ perp             1      6.868      1.136
+
+ front            1      7.637      2.196
+
+ overtake         1      6.937      0.592
+
+Feb-07-2023 09:53:21 (VOHN)
+ Scenario      Success  Path length  Curvature
+ perp             1      6.919      5.096
+
+ front            1      7.464      3.203
+
+ overtake         1      7.688      1.609
+
+
+Feb-13-2023 10:34:34  Using: DWA with re-planning (rng_seed = 3)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             0     6.933     3.710         0.092         3.489
+
+ front            0     6.400     3.341         0.518         4.277
+
+ dont_overtake    0     2.934     1.510         0.061         1.529
+
+ overtake         0     3.801     1.982         0.017         1.529
+
+ rnd_obst_1       0     3.734     1.938         0.037         2.165
+
+ rnd_obst_2       0     4.133     2.118         0.498         2.057
+
+ rnd_obst_3       1     16.133     6.729         1.421         1.253
+
+ rnd_obst_4       0     6.133     3.192         0.235         3.020
+
+ rnd_obst_5       0     5.200     2.691         0.282         3.150
+
+ rnd_obst_6       0     3.733     1.940         0.305         4.394
+
+ rnd_obst_7       0     10.400     5.482         0.882         2.659
+
+ rnd_obst_8       0     3.600     1.861         0.289         3.343
+
+ rnd_obst_9       0     7.734     4.021         0.433         4.321
+
+ rnd_obst_10      0     5.400     2.802         0.265         3.505
+
+
+Feb-13-2023 11:19:19  Using: DWA with re-planning and crazy high obstacle inflation (rng_seed = 3)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             1     17.400     6.309         1.737         3.020
+
+ front            0     6.333     2.976         1.259         4.288
+
+ dont_overtake    1     17.734     6.536         3.000         2.737
+
+ overtake         1     18.467     6.479         2.781         2.518
+
+ rnd_obst_1       0     3.800     1.799         0.142         2.161
+
+ rnd_obst_2       0     5.600     1.743         0.822         1.880
+
+ rnd_obst_3       0     19.934     5.784         14.027         2.926
+
+ rnd_obst_4       0     7.800     2.861         0.949         2.663
+
+ rnd_obst_5       0     5.800     2.423         0.751         2.963
+
+ rnd_obst_6       0     3.933     2.121         0.679         4.200
+
+ rnd_obst_7       0     20.068     5.011         3.155         2.337
+
+ rnd_obst_8       0     3.867     1.738         0.627         3.163
+
+ rnd_obst_9       0     8.733     3.675         0.934         4.043
+
+ rnd_obst_10      0     5.800     2.529         0.689         3.359
+
+
+Feb-13-2023 13:21:19  Using: Distance-based (rng_seed = 3)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             1     10.200     6.650         1.651         2.894
+
+ front            0     9.734     3.717         1.383         3.393
+
+ dont_overtake    1     11.068     7.055         2.289         1.838
+
+ overtake         1     10.400     6.771         1.488         1.639
+
+ rnd_obst_1       1     10.668     6.834         2.117         2.552
+
+ rnd_obst_2       1     10.934     6.873         2.335         2.720
+
+ rnd_obst_3       0     20.066     6.771         1.458         1.558
+
+ rnd_obst_4       1     10.934     6.843         1.769         2.600
+
+ rnd_obst_5       1     10.800     6.875         2.162         3.022
+
+ rnd_obst_6       1     11.200     6.928         3.045         4.638
+
+ rnd_obst_7       0     8.268     5.670         0.716         2.501
+
+ rnd_obst_8       1     16.667     8.305         2.092         3.617
+
+ rnd_obst_9       1     11.000     6.992         2.126         3.488
+
+ rnd_obst_10      1     10.800     6.908         2.320         3.343
+
+
+// Some tests with obstacle measurement noise (pose_std=0.01, vel_std=0.2)
+
+
+Feb-14-2023 10:37:13  Using: Distance-based (noise) (rng_seed = 4)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             1     10.133     6.652         1.557         2.894
+
+ front            1     11.133     7.031         2.933         3.845
+
+ dont_overtake    1     10.867     7.015         2.417         1.809
+
+ overtake         0     20.067     12.536         13.745         1.561
+
+ rnd_obst_1       1     15.667     10.215         4.422         2.743
+
+ rnd_obst_2       1     12.333     7.687         2.678         2.125
+
+ rnd_obst_3       0     20.066     8.314         3.335         2.852
+
+ rnd_obst_4       1     14.000     7.399         1.435         3.927
+
+ rnd_obst_5       1     13.667     8.312         10.964         3.329
+
+ rnd_obst_6       1     11.600     7.299         2.710         3.356
+
+ rnd_obst_7       1     10.734     6.629         1.832         1.993
+
+ rnd_obst_8       1     10.667     6.950         1.779         1.480
+
+ rnd_obst_9       1     16.533     9.170         4.270         2.202
+
+ rnd_obst_10      1     10.667     6.891         1.958         2.582
+
+
+Feb-15-2023 10:11:39  Using: Distance-based (noiseless) (rng_seed = 4)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             1     10.734     6.770         1.543         2.893
+
+ front            1     10.800     6.991         2.655         3.784
+
+ dont_overtake    1     11.333     7.227         1.888         1.851
+
+ overtake         0     20.067     10.598         6.404         1.491
+
+ rnd_obst_1       1     16.266     9.620         5.049         2.783
+
+ rnd_obst_2       1     12.000     7.497         2.633         2.117
+
+ rnd_obst_3       1     13.734     8.466         3.851         2.620
+
+ rnd_obst_4       1     11.200     7.082         2.311         3.695
+
+ rnd_obst_5       1     13.133     8.233         4.283         3.389
+
+ rnd_obst_6       1     11.333     7.245         2.628         3.361
+
+ rnd_obst_7       1     10.600     6.638         1.488         1.986
+
+ rnd_obst_8       1     10.534     6.948         2.141         1.468
+
+ rnd_obst_9       1     14.400     8.671         10.992         2.223
+
+ rnd_obst_10      1     10.799     6.884         1.997         2.583
+
+
+Feb-15-2023 10:32:55  Using: AdaptedVO (noiseless) (rng_seed = 4)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             1     10.333     6.634         1.085         3.044
+
+ front            1     10.933     6.946         1.765         3.941
+
+ dont_overtake    1     13.334     6.416         1.703         2.204
+
+ overtake         0     20.000     12.535         12.500         1.586
+
+ rnd_obst_1       1     15.534     9.188         4.993         2.993
+
+ rnd_obst_2       1     11.534     7.300         1.935         2.256
+
+ rnd_obst_3       1     13.533     8.237         3.709         2.836
+
+ rnd_obst_4       1     11.198     7.017         1.488         3.929
+
+ rnd_obst_5       1     14.334     8.708         10.571         3.543
+
+ rnd_obst_6       1     11.600     7.242         1.954         3.544
+
+ rnd_obst_7       1     11.267     7.138         1.941         2.199
+
+ rnd_obst_8       1     11.333     7.227         2.279         1.609
+
+ rnd_obst_9       1     14.800     8.902         10.443         2.391
+
+ rnd_obst_10      1     11.000     6.934         1.582         2.683
+
+
+Feb-15-2023 10:44:16  Using: AdaptedVO (noise) (rng_seed = 4)
+ Scenario      Success  Time     Path length   Curvature   ObstClearance
+ perp             1     14.600     6.359         1.919         3.166
+
+ front            1     11.000     6.991         1.741         3.983
+
+ dont_overtake    1     13.600     6.404         0.644         2.200
+
+ overtake         1     19.799     12.574         12.769         1.590
+
+ rnd_obst_1       1     14.000     6.310         1.580         3.201
+
+ rnd_obst_2       1     13.800     6.375         2.241         2.376
+
+ rnd_obst_3       1     14.200     6.401         2.707         2.941
+
+ rnd_obst_4       1     13.933     6.430         2.029         4.272
+
+ rnd_obst_5       1     14.733     6.556         3.881         3.735
+
+ rnd_obst_6       1     11.533     7.211         1.871         3.550
+
+ rnd_obst_7       1     11.067     7.065         1.841         2.172
+
+ rnd_obst_8       1     11.200     7.118         2.131         1.586
+
+ rnd_obst_9       1     15.800     6.560         3.198         2.903
+
+ rnd_obst_10      1     10.667     6.918         1.526         2.669
+
+// The high noise level makes the robot seem more cautious: this is because the obstacle is sometimes perceived with higher speed
+and this forces the robot to wait for the obstacle to pass. So the robot is slower but its trajectories are shorter.
+The curvature is difficult to analyse because when the robot lets the obstacle pass it has a more linear trajectory
+but as the robot is in some hesitancy state it makes it oscillate and thus increases the curvature measurement.

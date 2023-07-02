@@ -1,0 +1,36 @@
+{
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true,
+    },
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "python.formatting.provider": "black",
+    "python.linting.flake8Args": [
+        "--max-line-length=119",
+        "--ignore=E203,E722,I201,I100,BLK100",
+        "--per-file-ignores=__init__.py:F401"
+    ],
+    "python.linting.flake8Enabled": true,
+    "editor.formatOnSave": false,
+    "python.formatting.blackArgs": [
+        "--line-length=119"
+    ],
+    "editor.rulers": [
+        119
+    ],
+    "python.linting.pydocstyleEnabled": true,
+    "python.linting.pydocstyleArgs": [
+        "--convention=numpy",
+        "--ignore=D101,D102,D107,D100,D205,D213,D400,D413"
+    ],
+
+    "C_Cpp.clang_format_style": "Microsoft",
+    "C_Cpp.clang_format_sortIncludes": true,
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+}
